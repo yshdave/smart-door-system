@@ -1,0 +1,13 @@
+aws rekognition create-collection --collection-id smart-door-visitors --region us-west-2
+
+aws rekognition index-faces --collection-id smart-door-visitors --image '{"S3Object":{"Bucket":"smart-door-visitor-faces","Name":"Yash_face.jpeg"}}' --external-image-id yash_test --region us-west-2
+
+aws rekognition create-stream-processor --input '{"KinesisVideoStream":{"Arn":"arn:aws:kinesisvideo:us-west-2:430716645844:stream/sahil/1572938913752"}}' --name store-processor --role-arn arn:aws:iam::430716645844:role/RekogRole --stream-processor-output '{"KinesisDataStream":{"Arn":"arn:aws:kinesis:us-west-2:430716645844:stream/rekog_output"}}' --settings '{"FaceSearch":{"CollectionId":"smart-door-visitors", "FaceMatchThreshold": 85.5}}' --region us-west-2
+
+aws rekognition start-stream-processor --name store-processor --region us-west-2
+
+aws kinesis register-stream-consumer --consumer-name consumer_test_lambda --stream-arn arn:aws:kinesis:us-west-2:430716645844:stream/rekog_output --region us-west-2
+
+aws kinesis get-shard-iterator --shard-id shardId-000000000000 --shard-iterator-type TRIM_HORIZON --stream-name rekog_output --region us-west-2
+
+aws kinesis get-records --shard-iterator aws kinesis get-records --shard-iterator AAAAAAAAAAFvuKcxgHoJWvneDhsjxB1ygYG22A1XyADM7MlkeY7dF6kqs4tiaT3eeTpKctKsdXIk3MvD0dVFcxfE89NnliTpUndpHZF6grDa+7Amfv1eRE3OfySQ8JQRMrdhEStZnuNIg1LGTGaFPQMJhjfPflquwo/1rbrJBpOwnWNnc9RlAbFnThRi5c2hYLBdHCPL916xn/59JrjzagccTEMa8DS0 --region us-west-2
